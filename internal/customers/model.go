@@ -11,11 +11,17 @@ type Customer struct {
 	Password string
 }
 
+type customerDto struct {
+	Name    string `json:"name"`
+	Address string `json:"address"`
+	Email   string `json:"email"`
+}
+
 type createCustomerDto struct {
-	Name     string
-	Address  string
-	Email    string
-	Password string
+	Name     string `json:"name"`
+	Address  string `json:"address"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func create(name, address, email, password string) (*Customer, error) {
@@ -29,4 +35,12 @@ func create(name, address, email, password string) (*Customer, error) {
 		Email:    email,
 		Password: password,
 	}, nil
+}
+
+func (c Customer) toDto() customerDto {
+	return customerDto{
+		Name:    c.Name,
+		Address: c.Address,
+		Email:   c.Email,
+	}
 }

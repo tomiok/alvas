@@ -11,6 +11,12 @@ type repository struct {
 	db *gorm.DB
 }
 
+func newRepository(db *gorm.DB) *repository {
+	return &repository{
+		db: db,
+	}
+}
+
 func (r repository) Create(dto createCustomerDto) (*Customer, error) {
 	customer, err := create(dto.Name, dto.Address, dto.Email, dto.Password)
 
@@ -25,4 +31,9 @@ func (r repository) Create(dto createCustomerDto) (*Customer, error) {
 	}
 
 	return customer, err
+}
+
+func (r repository) Lookup(email, password string) error {
+	var c Customer
+	return r.db.Find(&c, "email=? and password=?", email, password).Error
 }
