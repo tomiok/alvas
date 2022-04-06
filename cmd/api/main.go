@@ -10,7 +10,6 @@ import (
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	log.Info().Msg("application starting")
 	database.Init()
 
 	//migrations
@@ -20,6 +19,11 @@ func main() {
 		log.Error().Err(err)
 		log.Fatal().Msg("cannot migrate :(")
 	}
+
+	r := routesSetup(database.DBInstance)
+	s := newServer("3333", r)
+
+	s.start()
 }
 
 func migrate(db *gorm.DB) error {
