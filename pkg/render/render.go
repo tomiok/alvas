@@ -11,7 +11,13 @@ import (
 
 var functions = template.FuncMap{}
 
-func TemplateRender(w http.ResponseWriter, tmpl string) {
+type TemplateData struct {
+	Name      string
+	Err       string
+	CSRFToken string
+}
+
+func TemplateRender(w http.ResponseWriter, tmpl string, td *TemplateData) {
 	t, ok := config.AppCfg.Cache[tmpl]
 
 	if !ok {
@@ -19,7 +25,7 @@ func TemplateRender(w http.ResponseWriter, tmpl string) {
 	}
 
 	buf := new(bytes.Buffer)
-	err := t.Execute(buf, nil)
+	err := t.Execute(buf, td)
 
 	if err != nil {
 		log.Fatal().Msgf("cannot execute %s", err.Error())

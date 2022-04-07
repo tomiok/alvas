@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/tomiok/alvas/internal/customers"
 	"github.com/tomiok/alvas/internal/views/home"
 	"gorm.io/gorm"
@@ -10,6 +11,9 @@ import (
 
 func routesSetup(db *gorm.DB) chi.Router {
 	r := chi.NewRouter()
+
+	r.Use(middleware.Recoverer)
+
 	customerRoutes(db, r)
 	pingRoute(r)
 	homeRoute(r)
