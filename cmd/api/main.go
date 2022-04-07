@@ -5,11 +5,15 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/tomiok/alvas/internal/database"
 	"github.com/tomiok/alvas/internal/migrations"
+	"github.com/tomiok/alvas/pkg/config"
+	"github.com/tomiok/alvas/pkg/render"
 	"gorm.io/gorm"
 )
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+
+	//database
 	database.Init()
 
 	//migrations
@@ -19,6 +23,9 @@ func main() {
 		log.Error().Err(err)
 		log.Fatal().Msg("cannot migrate :(")
 	}
+
+	// template cache
+	config.Init(render.TemplateRenderCache)
 
 	r := routesSetup(database.DBInstance)
 	s := newServer("3333", r)

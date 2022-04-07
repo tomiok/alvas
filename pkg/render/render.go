@@ -1,7 +1,9 @@
 package render
 
 import (
+	"bytes"
 	"github.com/rs/zerolog/log"
+	"github.com/tomiok/alvas/pkg/config"
 	"html/template"
 	"net/http"
 	"path/filepath"
@@ -10,29 +12,28 @@ import (
 var functions = template.FuncMap{}
 
 func TemplateRender(w http.ResponseWriter, tmpl string) {
-	_, err := TemplateRenderCache(w)
+	t, ok := config.AppCfg.Cache[tmpl]
 
-	if err != nil {
-		log.Error().Msgf("cannot render: %s", err.Error())
+	if !ok {
+		log.Fatal().Msg("cache is not working")
 	}
 
-	parsed, err := template.ParseFiles("../templates/" + tmpl)
+	buf := new(bytes.Buffer)
+	err := t.Execute(buf, nil)
+
+	if err != nil {
+		log.Fatal().Msgf("cannot execute %s", err.Error())
+	}
+
+	_, err = buf.WriteTo(w)
 
 	if err != nil {
 		log.Error().Err(err)
-		return
-	}
-
-	err = parsed.Execute(w, nil)
-
-	if err != nil {
-		log.Error().Err(err)
-		return
 	}
 }
 
-func TemplateRenderCache(w http.ResponseWriter) (map[string]*template.Template, error) {
-	pages, err := filepath.Glob("../templates/*.page.tmpl")
+func TemplateRenderCache() (map[string]*template.Template, error) {
+	pages, err := filepath.Glob("./pkg/templates/*.page.tmpl")
 	var templateCache = make(map[string]*template.Template)
 
 	if err != nil {
@@ -48,14 +49,14 @@ func TemplateRenderCache(w http.ResponseWriter) (map[string]*template.Template, 
 			return templateCache, err
 		}
 
-		matches, err := filepath.Glob("../templates/*.layout.tmpl")
+		matches, err := filepath.Glob("./pkg/templates/*.layout.tmpl")
 
 		if err != nil {
 			return templateCache, err
 		}
 
 		if len(matches) > 0 {
-			ts, err = ts.ParseGlob("../templates/*.layout.tmpl")
+			ts, err = ts.ParseGlob("./pkg/templates/*.layout.tmpl")
 			if err != nil {
 				return templateCache, err
 			}

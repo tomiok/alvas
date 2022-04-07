@@ -6,5 +6,5 @@ import (
 )
 
 func RenderView(w http.ResponseWriter, r *http.Request) {
-	render.TemplateRender(w, "home")
+	render.TemplateRender(w, "home.page.tmpl")
 }
