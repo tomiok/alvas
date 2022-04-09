@@ -6,14 +6,12 @@ import (
 	"gorm.io/gorm"
 )
 
-var DBInstance *gorm.DB
-
-func Init() {
+func Init() *gorm.DB {
 	db, err := gorm.Open(sqlite.Open("alvas.db"), &gorm.Config{})
 
 	if err != nil {
 		log.Fatal().Err(err)
 	}
 
-	DBInstance = db
+	return db
 }

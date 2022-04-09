@@ -2,16 +2,21 @@ package customers
 
 import (
 	"encoding/json"
+	"github.com/alexedwards/scs/v2"
 	"github.com/tomiok/alvas/pkg/webutils"
 	"net/http"
 )
 
 type Web struct {
 	Service
+	*scs.SessionManager
 }
 
-func NewWeb(s Service) Web {
-	return Web{Service: s}
+func newWeb(s Service, session *scs.SessionManager) Web {
+	return Web{
+		Service:        s,
+		SessionManager: session,
+	}
 }
 
 func (h Web) CreateHandler(w http.ResponseWriter, r *http.Request) {

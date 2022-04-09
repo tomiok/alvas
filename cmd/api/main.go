@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/alexedwards/scs/v2"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/tomiok/alvas/internal/database"
@@ -8,16 +9,18 @@ import (
 	"github.com/tomiok/alvas/pkg/config"
 	"github.com/tomiok/alvas/pkg/render"
 	"gorm.io/gorm"
+	"net/http"
+	"time"
 )
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
 	//database
-	database.Init()
+	db := database.Init()
 
 	//migrations
-	err := migrate(database.DBInstance)
+	err := migrate(db)
 
 	if err != nil {
 		log.Error().Err(err)
@@ -27,7 +30,14 @@ func main() {
 	// template cache
 	config.Init(render.TemplateRenderCache)
 
-	r := routesSetup(database.DBInstance)
+	// session
+	session := scs.New()
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true
+	session.Cookie.Secure = false // true in prod
+	session.Cookie.SameSite = http.SameSiteLaxMode
+
+	r := routesSetup(db, session)
 	s := newServer("3333", r)
 
 	s.start()

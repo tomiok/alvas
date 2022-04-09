@@ -1,9 +1,12 @@
 package customers
 
-import "gorm.io/gorm"
+import (
+	"github.com/alexedwards/scs/v2"
+	"gorm.io/gorm"
+)
 
-func New(db *gorm.DB) Web {
+func New(db *gorm.DB, session *scs.SessionManager) Web {
 	repo := newRepository(db)
 	service := NewService(repo)
-	return NewWeb(service)
+	return newWeb(service, session)
 }
