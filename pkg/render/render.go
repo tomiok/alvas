@@ -18,10 +18,21 @@ type TemplateData struct {
 }
 
 func TemplateRender(w http.ResponseWriter, tmpl string, td *TemplateData) {
-	t, ok := config.AppCfg.Cache[tmpl]
+	var t *template.Template
+	if config.AppCfg.UseCache {
+		var ok = true
+		t, ok = config.AppCfg.Cache[tmpl]
+		if !ok {
+			log.Fatal().Msg("cache is not working")
+		}
+	} else {
+		cache, err := TemplateRenderCache()
 
-	if !ok {
-		log.Fatal().Msg("cache is not working")
+		if err != nil {
+			log.Fatal().Msg("cache is not working")
+		}
+
+		t = cache[tmpl]
 	}
 
 	buf := new(bytes.Buffer)
