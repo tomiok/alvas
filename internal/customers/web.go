@@ -29,14 +29,14 @@ func (h Web) CreateHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(body).Decode(&dto)
 
 	if err != nil {
-		webutils.ResponseBadRequest(w, "cannot decode create customer request")
+		webutils.ResponseBadRequest(w, "cannot decode create customer request", err)
 		return
 	}
 
 	customer, err := h.Create(dto)
 
 	if err != nil {
-		webutils.ResponseBadRequest(w, "cannot create customer")
+		webutils.ResponseBadRequest(w, "cannot create customer", err)
 		return
 	}
 
@@ -63,7 +63,7 @@ func (h Web) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := h.LogIn(dto.Email, dto.Password)
 	if err != nil {
-		webutils.ResponseBadRequest(w, "cannot log in")
+		webutils.ResponseBadRequest(w, "cannot log in", err)
 		return
 	}
 

@@ -5,8 +5,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/tomiok/alvas/internal/customers"
+	"github.com/tomiok/alvas/internal/useradmin"
 	"github.com/tomiok/alvas/internal/views/home"
-	csrfmid "github.com/tomiok/alvas/pkg/csrf"
 	sessmid "github.com/tomiok/alvas/pkg/sess"
 	"gorm.io/gorm"
 	"net/http"
@@ -17,7 +17,7 @@ func routesSetup(db *gorm.DB, sess *scs.SessionManager) chi.Router {
 
 	// middlewares
 	r.Use(middleware.Recoverer)
-	r.Use(csrfmid.NoSurf())
+	//r.Use(csrfmid.NoSurf())
 	r.Use(sessmid.LoadSession)
 
 	// file server
@@ -25,16 +25,23 @@ func routesSetup(db *gorm.DB, sess *scs.SessionManager) chi.Router {
 
 	// application routes
 	customerRoutes(db, r, sess)
+	adminRoutes(db, r, sess)
 	pingRoute(r)
 	homeRoute(r)
+
 	return r
 }
 
 func customerRoutes(db *gorm.DB, r chi.Router, session *scs.SessionManager) {
 	web := customers.New(db, session)
-	customerR := customers.CustomerRoutes(web)
+	customerRoutes := customers.CustomerRoutes(web)
+	r.Mount("/customers", customerRoutes)
+}
 
-	r.Mount("/customers", customerR)
+func adminRoutes(db *gorm.DB, r chi.Router, sess *scs.SessionManager) {
+	web := useradmin.New(db, sess)
+	adminRoutes := useradmin.Routes(web)
+	r.Mount("/admins", adminRoutes)
 }
 
 func pingRoute(r chi.Router) {

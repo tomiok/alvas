@@ -15,8 +15,8 @@ type okDto = struct {
 	Value   interface{} `json:"value"`
 }
 
-func ResponseBadRequest(w http.ResponseWriter, message string) {
-	log.Error().Msg("cannot decode entity")
+func ResponseBadRequest(w http.ResponseWriter, message string, err error) {
+	log.Error().Msg(err.Error())
 	w.WriteHeader(http.StatusBadRequest)
 	_ = json.NewEncoder(w).Encode(&badRequestDto{
 		Message: message,

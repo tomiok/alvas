@@ -25,7 +25,7 @@ type createCustomerDto struct {
 }
 
 func create(name, address, email, password string) (*Customer, error) {
-	if name == "" || address == "" || email != "" || password == "" {
+	if name == "" || address == "" || email == "" || password == "" {
 		return nil, ErrEmptyFields
 	}
 
