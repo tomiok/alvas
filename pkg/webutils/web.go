@@ -18,6 +18,7 @@ type okDto = struct {
 func ResponseBadRequest(w http.ResponseWriter, message string, err error) {
 	log.Error().Msg(err.Error())
 	w.WriteHeader(http.StatusBadRequest)
+	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(&badRequestDto{
 		Message: message,
 	})
@@ -25,6 +26,7 @@ func ResponseBadRequest(w http.ResponseWriter, message string, err error) {
 
 func Response2xx(w http.ResponseWriter, status int, message string, any interface{}) {
 	w.WriteHeader(status)
+	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(&okDto{
 		Message: message,
 		Value:   any,
