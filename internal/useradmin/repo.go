@@ -1,10 +1,13 @@
 package useradmin
 
-import "gorm.io/gorm"
+import (
+	"github.com/tomiok/alvas/pkg/users"
+	"gorm.io/gorm"
+)
 
 type Repository interface {
 	CreateAdmin(dto createAdminDto) (*Admin, error)
-	Lookup(email, password string) (*Admin, error)
+	Lookup(email string) (*Admin, error)
 }
 
 type repo struct {
@@ -18,7 +21,8 @@ func newRepo(db *gorm.DB) *repo {
 }
 
 func (r repo) CreateAdmin(dto createAdminDto) (*Admin, error) {
-	admin := createAdmin(dto.Email, dto.Name, dto.Password)
+	password, _ := users.HashPassword(dto.Password)
+	admin := createAdmin(dto.Email, dto.Name, password)
 	err := r.db.Create(admin).Error
 
 	if err != nil {
@@ -28,7 +32,7 @@ func (r repo) CreateAdmin(dto createAdminDto) (*Admin, error) {
 	return admin, nil
 }
 
-func (r repo) Lookup(email, password string) (*Admin, error) {
+func (r repo) Lookup(email string) (*Admin, error) {
 	var admin Admin
 	err := r.db.First(&admin, "email=?", email).Error
 

@@ -1,10 +1,13 @@
 package customers
 
-import "gorm.io/gorm"
+import (
+	"github.com/tomiok/alvas/pkg/users"
+	"gorm.io/gorm"
+)
 
 type Repository interface {
 	Create(dto createCustomerDto) (*Customer, error)
-	Lookup(email, password string) error
+	Lookup(email string) (*Customer, error)
 }
 
 type repository struct {
@@ -18,7 +21,8 @@ func newRepository(db *gorm.DB) *repository {
 }
 
 func (r repository) Create(dto createCustomerDto) (*Customer, error) {
-	customer, err := create(dto.Name, dto.Address, dto.Email, dto.Password)
+	pass, _ := users.HashPassword(dto.Password)
+	customer, err := create(dto.Name, dto.Address, dto.Email, pass)
 
 	if err != nil {
 		return nil, err
@@ -33,7 +37,13 @@ func (r repository) Create(dto createCustomerDto) (*Customer, error) {
 	return customer, err
 }
 
-func (r repository) Lookup(email, password string) error {
+func (r repository) Lookup(email string) (*Customer, error) {
 	var c Customer
-	return r.db.Find(&c, "email=? and password=?", email, password).Error
+	err := r.db.Find(&c, "email=?", email).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &c, nil
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/tomiok/alvas/internal/customers"
 	"github.com/tomiok/alvas/internal/useradmin"
 	"github.com/tomiok/alvas/internal/views/home"
-	sessmid "github.com/tomiok/alvas/pkg/sess"
+	sessmid "github.com/tomiok/alvas/pkg/users"
 	"gorm.io/gorm"
 	"net/http"
 )

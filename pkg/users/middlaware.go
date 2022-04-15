@@ -1,4 +1,4 @@
-package sessmid
+package users
 
 import (
 	"github.com/alexedwards/scs/v2"
