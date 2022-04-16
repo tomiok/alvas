@@ -15,6 +15,7 @@ type TemplateData struct {
 	Name      string
 	Err       string
 	CSRFToken string
+	Data      interface{}
 }
 
 func TemplateRender(w http.ResponseWriter, tmpl string, td *TemplateData) {

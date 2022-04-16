@@ -36,3 +36,28 @@ func (h Web) CreateAdminHandler(w http.ResponseWriter, r *http.Request) {
 
 	webutils.Response2xx(w, http.StatusCreated, "admin user created", res)
 }
+
+func (h Web) LoginHandler(w http.ResponseWriter, r *http.Request) {
+	var dto LoginDto
+	body := r.Body
+
+	defer func() {
+		_ = body.Close()
+	}()
+
+	err := json.NewDecoder(body).Decode(&dto)
+
+	if err != nil {
+		webutils.ResponseBadRequest(w, "cannot decode", err)
+		return
+	}
+
+	admin, err := h.s.LogIn(dto.Email, dto.Password)
+
+	if err != nil {
+		webutils.ResponseBadRequest(w, "cannot log in", err)
+		return
+	}
+
+	webutils.Response2xx(w, http.StatusOK, "admin logged OK", admin)
+}
