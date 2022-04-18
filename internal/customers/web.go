@@ -12,8 +12,8 @@ type Web struct {
 	*scs.SessionManager
 }
 
-func newWeb(s Service, session *scs.SessionManager) Web {
-	return Web{
+func newWeb(s Service, session *scs.SessionManager) *Web {
+	return &Web{
 		Service:        s,
 		SessionManager: session,
 	}

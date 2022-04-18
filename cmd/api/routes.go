@@ -15,8 +15,17 @@ import (
 	"strings"
 )
 
+type Handler struct {
+	customerHandler *customers.Web
+}
+
 func routesSetup(db *gorm.DB, sess *scs.SessionManager) chi.Router {
 	r := chi.NewRouter()
+
+	//main handler
+	handler := &Handler{
+		customerHandler: customers.New(db, sess),
+	}
 
 	// middlewares
 	r.Use(middleware.Recoverer)
@@ -27,7 +36,7 @@ func routesSetup(db *gorm.DB, sess *scs.SessionManager) chi.Router {
 	fileServer(r)
 
 	// application routes
-	customerRoutes(db, r, sess)
+	customerRoutes(r, handler)
 	adminRoutes(db, r, sess)
 	pingRoute(r)
 	homeRoute(r)
@@ -35,16 +44,13 @@ func routesSetup(db *gorm.DB, sess *scs.SessionManager) chi.Router {
 	return r
 }
 
-func customerRoutes(db *gorm.DB, r chi.Router, session *scs.SessionManager) {
-	web := customers.New(db, session)
-	customerRoutes := customers.CustomerRoutes(web)
-	r.Mount("/customers", customerRoutes)
+func customerRoutes(r chi.Router, h *Handler) {
+	r.Mount("/customers", customers.CustomerRoutes(h.customerHandler))
 }
 
 func adminRoutes(db *gorm.DB, r chi.Router, sess *scs.SessionManager) {
 	web := useradmin.New(db, sess)
-	adminRoutes := useradmin.Routes(web)
-	r.Mount("/admins", adminRoutes)
+	r.Mount("/admins", useradmin.Routes(web))
 }
 
 func pingRoute(r chi.Router) {
@@ -61,6 +67,10 @@ func fileServer(r chi.Router) {
 	workDir, _ := os.Getwd()
 	filesDir := http.Dir(filepath.Join(workDir, "static"))
 	fs(r, "/static", filesDir)
+
+}
+
+func mainLogin() {
 
 }
 

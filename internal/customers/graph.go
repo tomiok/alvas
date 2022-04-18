@@ -5,7 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func New(db *gorm.DB, session *scs.SessionManager) Web {
+func New(db *gorm.DB, session *scs.SessionManager) *Web {
 	repo := newRepository(db)
 	service := NewService(repo)
 	return newWeb(service, session)

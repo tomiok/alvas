@@ -1,15 +1,21 @@
 package customers
 
-import "github.com/go-chi/chi/v5"
+import (
+	"github.com/go-chi/chi/v5"
+	"net/http"
+)
 
-func CustomerRoutes(w Web) chi.Router {
+func CustomerRoutes(w *Web) chi.Router {
 	r := chi.NewRouter()
 	r.Post("/", w.CreateHandler)
-	r.Post("/login", w.LoginHandler)
 
 	// views
 	r.Get("/views/login", LoginViewHandler)
 	r.Get("/views/new_customer", NewCustomerViewHandler)
 
 	return r
+}
+
+func CustomerLogin(w *Web) func(w http.ResponseWriter, r *http.Request) {
+	return w.LoginHandler
 }
