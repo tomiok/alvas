@@ -7,8 +7,6 @@ func Routes(web *Web) chi.Router {
 
 	r.Post("/", web.CreateAdminHandler)
 	r.Post("/login", web.LoginHandler)
-
-	// views
-	r.Get("/views/login", LoginViewHandler)
+	
 	return r
 }

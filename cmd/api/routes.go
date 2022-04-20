@@ -7,6 +7,7 @@ import (
 	"github.com/tomiok/alvas/internal/customers"
 	"github.com/tomiok/alvas/internal/useradmin"
 	"github.com/tomiok/alvas/internal/views/home"
+	"github.com/tomiok/alvas/internal/views/login"
 	sessmid "github.com/tomiok/alvas/pkg/users"
 	"gorm.io/gorm"
 	"net/http"
@@ -34,6 +35,9 @@ func routesSetup(db *gorm.DB, sess *scs.SessionManager) chi.Router {
 
 	// file server
 	fileServer(r)
+
+	// login
+	login.MainLoginViewRoutes(r)
 
 	// application routes
 	customerRoutes(r, handler)
@@ -70,15 +74,11 @@ func fileServer(r chi.Router) {
 
 }
 
-func mainLogin() {
-
-}
-
 // fs conveniently sets up a http.FileServer handler to serve
 // static files from a http.FileSystem.
 func fs(r chi.Router, path string, root http.FileSystem) {
 	if strings.ContainsAny(path, "{}*") {
-		panic("FileServer does not permit any URL parameters.")
+		panic("file server does not permit any URL parameters.")
 	}
 
 	if path != "/" && path[len(path)-1] != '/' {

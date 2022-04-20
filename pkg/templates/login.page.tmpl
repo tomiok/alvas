@@ -1,7 +1,7 @@
 {{ template "base" .}}
 
 {{define "content"}}
-    <form action="" method="POST">
+    <form action="/main_login" method="POST">
         <div class="mb-3">
             <label for="emailInput" class="form-label">Email</label>
             <input type="email" class="form-control" id="emailInput" aria-describedby="emailHelp">
@@ -12,8 +12,16 @@
             <input type="password" class="form-control" id="passwordInput">
         </div>
         <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Soy ADMIN</label>
+            <input class="form-check-input" type="radio" name="userType" id="userAdminRadio" value="admin">
+            <label class="form-check-label" for="userAdminRadio">ADMIN</label>
+        </div>
+        <div class="mb-3 form-check">
+            <input class="form-check-input" type="radio" name="userType" id="userCustomerRadio" value="customer">
+            <label class="form-check-label" for="userCustomerRadio">Customer</label>
+        </div>
+        <div class="mb-3 form-check">
+            <input class="form-check-input" type="radio" name="userType" id="userDeliveryRadio" value="delivery">
+            <label class="form-check-label" for="userDeliveryRadio">Delivery</label>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
