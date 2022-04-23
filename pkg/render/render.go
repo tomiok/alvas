@@ -12,10 +12,11 @@ import (
 var functions = template.FuncMap{}
 
 type TemplateData struct {
-	Name      string
-	Err       string
-	CSRFToken string
-	Data      interface{}
+	Name       string
+	Err        string
+	CSRFToken  string
+	Data       interface{}
+	IsLoginReq bool
 }
 
 func TemplateRender(w http.ResponseWriter, tmpl string, td *TemplateData) {

@@ -2,7 +2,6 @@ package login
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/rs/zerolog/log"
 	"github.com/tomiok/alvas/pkg/render"
 	"net/http"
 )
@@ -17,6 +16,9 @@ func mainLoginViewHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func mainLoginHandler(w http.ResponseWriter, r *http.Request) {
-	value := r.FormValue("userType")
-	log.Info().Msgf("value: %s", value)
+	if r.Method == http.MethodGet {
+		render.TemplateRender(w, "login.page.tmpl", &render.TemplateData{
+			IsLoginReq: true,
+		})
+	}
 }
