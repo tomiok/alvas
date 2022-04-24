@@ -7,9 +7,7 @@ import (
 func CustomerRoutes(w *Web) chi.Router {
 	r := chi.NewRouter()
 	r.Post("/", w.CreateHandler)
-
-	// views
-	r.Get("/views/new_customer", NewCustomerViewHandler)
+	r.Get("/", w.CreateHandler)
 
 	return r
 }
