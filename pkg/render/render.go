@@ -17,6 +17,7 @@ type TemplateData struct {
 	CSRFToken  string
 	Data       interface{}
 	IsLoginReq bool
+	IsLogged   bool
 }
 
 func TemplateRender(w http.ResponseWriter, tmpl string, td *TemplateData) {

@@ -6,8 +6,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/tomiok/alvas/internal/customers"
 	"github.com/tomiok/alvas/internal/useradmin"
-	"github.com/tomiok/alvas/internal/views/home"
-	"github.com/tomiok/alvas/internal/views/login"
+	"github.com/tomiok/alvas/pkg/render"
 	sessmid "github.com/tomiok/alvas/pkg/users"
 	"gorm.io/gorm"
 	"net/http"
@@ -37,7 +36,7 @@ func routesSetup(db *gorm.DB, sess *scs.SessionManager) chi.Router {
 	fileServer(r)
 
 	// login
-	login.MainLoginViewRoutes(r)
+	loginRoute(r)
 
 	// application routes
 	customerRoutes(r, handler)
@@ -64,14 +63,27 @@ func pingRoute(r chi.Router) {
 }
 
 func homeRoute(r chi.Router) {
-	r.Get("/", home.RenderView)
+	r.Get("/", func(w http.ResponseWriter, _ *http.Request) {
+		render.TemplateRender(w, "home.page.tmpl", &render.TemplateData{
+			IsLogged: false,
+		})
+	})
+}
+
+func loginRoute(r chi.Router) {
+	r.Get("/main_login", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			render.TemplateRender(w, "login.page.tmpl", &render.TemplateData{
+				IsLoginReq: true,
+			})
+		}
+	})
 }
 
 func fileServer(r chi.Router) {
 	workDir, _ := os.Getwd()
 	filesDir := http.Dir(filepath.Join(workDir, "static"))
 	fs(r, "/static", filesDir)
-
 }
 
 // fs conveniently sets up a http.FileServer handler to serve

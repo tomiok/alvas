@@ -1,30 +1,51 @@
 {{ template "base" .}}
 
-{{define "content"}}
+{{ define "content" }}
+    {{ template "nav" .}}
     {{ if .IsLoginReq }}
-        <form action="/main_login" method="POST">
-            <div class="mb-3">
-                <label for="emailInput" class="form-label">Email</label>
-                <input type="email" class="form-control" id="emailInput" aria-describedby="emailHelp">
-                <div id="emailHelp" class="form-text">Tu direccion no va a ser compartida.</div>
+        <div class="container">
+            <div class="row mt-4">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <h2 class="text-center"> Alvas envios -  inicio de sesión </h2>
+                    <form action="/main_login" method="POST">
+                        <div class="form-outline mb-4">
+                            <label for="emailInput" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="emailInput" aria-describedby="emailHelp">
+                            <div id="emailHelp" class="form-text">Tu direccion no va a ser compartida.</div>
+                        </div>
+                        <div class="form-outline mb-4">
+                            <label for="passwordInput" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="passwordInput">
+                        </div>
+                        <div class="row mb-4 d-flex justify-content-center">
+                            <div class="col form-check mb-3">
+                                <input class="form-check-input" type="radio" name="userType" id="userAdminRadio"
+                                       value="admin">
+                                <label class="form-check-label" for="userAdminRadio">ADMIN</label>
+                            </div>
+                            <div class="col form-check mb-3">
+                                <input class="form-check-input" type="radio" name="userType" id="userCustomerRadio"
+                                       value="customer">
+                                <label class="form-check-label" for="userCustomerRadio">Customer</label>
+                            </div>
+                            <div class="col form-check mb-3">
+                                <input class="form-check-input" type="radio" name="userType" id="userDeliveryRadio"
+                                       value="delivery">
+                                <label class="form-check-label" for="userDeliveryRadio">Delivery</label>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col mb-2">
+                                <button type="submit" class="btn btn-primary">Log in</button>
+                            </div>
+                            <div class="col mb-2">
+                                <a href="/register">Registrarse</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="passwordInput" class="form-label">Contraseña</label>
-                <input type="password" class="form-control" id="passwordInput">
-            </div>
-            <div class="mb-3 form-check">
-                <input class="form-check-input" type="radio" name="userType" id="userAdminRadio" value="admin">
-                <label class="form-check-label" for="userAdminRadio">ADMIN</label>
-            </div>
-            <div class="mb-3 form-check">
-                <input class="form-check-input" type="radio" name="userType" id="userCustomerRadio" value="customer">
-                <label class="form-check-label" for="userCustomerRadio">Customer</label>
-            </div>
-            <div class="mb-3 form-check">
-                <input class="form-check-input" type="radio" name="userType" id="userDeliveryRadio" value="delivery">
-                <label class="form-check-label" for="userDeliveryRadio">Delivery</label>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+        </div>
     {{ end }}
 {{ end }}

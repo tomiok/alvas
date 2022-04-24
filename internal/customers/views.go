@@ -5,6 +5,6 @@ import (
 	"net/http"
 )
 
-func NewCustomerViewHandler(w http.ResponseWriter, r *http.Request) {
+func NewCustomerViewHandler(w http.ResponseWriter, _ *http.Request) {
 	render.TemplateRender(w, "new_customer.page.tmpl", nil)
 }

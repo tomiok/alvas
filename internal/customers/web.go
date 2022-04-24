@@ -20,6 +20,10 @@ func newWeb(s Service, session *scs.SessionManager) *Web {
 }
 
 func (h Web) CreateHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+
+	}
+
 	var dto createCustomerDto
 	body := r.Body
 	defer func() {
