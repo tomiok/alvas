@@ -2,6 +2,7 @@ package render
 
 import (
 	"bytes"
+	"github.com/gorilla/csrf"
 	"github.com/rs/zerolog/log"
 	"github.com/tomiok/alvas/pkg/config"
 	"html/template"
@@ -20,7 +21,14 @@ type TemplateData struct {
 	IsLogged   bool
 }
 
-func TemplateRender(w http.ResponseWriter, tmpl string, td *TemplateData) {
+func addDefaultData(td *TemplateData, r *http.Request) *TemplateData {
+	td.Data = map[string]interface{}{
+		csrf.TemplateTag: csrf.TemplateField(r),
+	}
+	return td
+}
+
+func TemplateRender(w http.ResponseWriter, r *http.Request, tmpl string, td *TemplateData) {
 	var t *template.Template
 	if config.AppCfg.UseCache {
 		var ok = true
@@ -37,6 +45,8 @@ func TemplateRender(w http.ResponseWriter, tmpl string, td *TemplateData) {
 
 		t = cache[tmpl]
 	}
+
+	td = addDefaultData(td, r)
 
 	buf := new(bytes.Buffer)
 	err := t.Execute(buf, td)

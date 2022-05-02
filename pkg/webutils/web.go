@@ -6,6 +6,12 @@ import (
 	"net/http"
 )
 
+const (
+	SessIsLogged     = "isLogged"
+	SessCustomerID   = "customer_id"
+	SessCustomerName = "customer_name"
+)
+
 type badRequestDto = struct {
 	Message string `json:"message"`
 }

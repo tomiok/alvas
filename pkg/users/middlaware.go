@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
-func LoadSession(next http.Handler) http.Handler {
-	return scs.New().LoadAndSave(next)
+func LoadSession(sess *scs.SessionManager) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return sess.LoadAndSave(next)
+	}
 }

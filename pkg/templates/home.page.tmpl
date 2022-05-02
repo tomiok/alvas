@@ -26,12 +26,25 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <h1 class="text-center mt-3"> Bienvenidos a <strong>Alvas</strong> envíos</h1>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium eveniet labore recusandae tempore? Aperiam aspernatur corporis cupiditate dolores illo laborum minus nihil odit officiis, quae quam quisquam, ratione tenetur, unde.</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab animi aspernatur atque beatae cum dignissimos ea, eius eum illum magni neque non omnis provident quidem quisquam, sint tempore. Consectetur, voluptatibus?</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. At doloremque illum labore molestiae officia quasi sit suscipit ullam. Dolore dolorem eius est illum nam neque quae quod sit voluptatibus? Inventore?</p>
+                {{if .IsLogged }}
+                    <h1 class="text-center mt-3"> Bienvenido {{.Name}}</h1>
+                {{else}}
+                    <h1 class="text-center mt-3"> Bienvenidos a <strong>Alvas</strong> envíos</h1>
+                {{end}}
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium eveniet labore recusandae
+                    tempore?
+                    Aperiam aspernatur corporis cupiditate dolores illo laborum minus nihil odit officiis, quae quam
+                    quisquam,
+                    ratione tenetur, unde.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab animi aspernatur atque beatae cum
+                    dignissimos
+                    ea, eius eum illum magni neque non omnis provident quidem quisquam, sint tempore. Consectetur,
+                    voluptatibus?</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. At doloremque illum labore molestiae
+                    officia quasi
+                    sit suscipit ullam. Dolore dolorem eius est illum nam neque quae quod sit voluptatibus?
+                    Inventore?</p>
             </div>
         </div>
     </div>
-
-{{ end }}
+{{end}}
