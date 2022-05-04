@@ -13,12 +13,13 @@ import (
 var functions = template.FuncMap{}
 
 type TemplateData struct {
-	Name       string
-	Err        string
-	CSRFToken  string
-	Data       interface{}
-	IsLoginReq bool
-	IsLogged   bool
+	CustomerName string
+	AdminName    string
+	Err          string
+	CSRFToken    string
+	Data         interface{}
+	IsLoginReq   bool
+	IsLogged     bool
 }
 
 func addDefaultData(td *TemplateData, r *http.Request) *TemplateData {

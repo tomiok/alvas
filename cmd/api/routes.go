@@ -69,7 +69,7 @@ func homeRoute(r chi.Router, sess *scs.SessionManager) {
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		var td = &render.TemplateData{}
 		if sess.Exists(r.Context(), webutils.SessCustomerID) {
-			td.Name = sess.GetString(r.Context(), webutils.SessCustomerName)
+			td.CustomerName = sess.GetString(r.Context(), webutils.SessCustomerName)
 			td.IsLogged = true
 		}
 
