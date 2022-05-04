@@ -78,7 +78,7 @@ func homeRoute(r chi.Router, sess *scs.SessionManager) {
 }
 
 func loginRoute(r chi.Router) {
-	r.Get("/main_login", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/login", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			render.TemplateRender(w, r, "login.page.tmpl", &render.TemplateData{
 				IsLoginReq: true,
