@@ -17,15 +17,19 @@ type TemplateData struct {
 	AdminName    string
 	Err          string
 	CSRFToken    string
-	Data         interface{}
+	Data         map[string]interface{}
 	IsLoginReq   bool
 	IsLogged     bool
 }
 
 func addDefaultData(td *TemplateData, r *http.Request) *TemplateData {
-	td.Data = map[string]interface{}{
-		csrf.TemplateTag: csrf.TemplateField(r),
+	if td.Data == nil {
+		td.Data = map[string]interface{}{
+			csrf.TemplateTag: csrf.TemplateField(r),
+		}
+		return td
 	}
+	td.Data[csrf.TemplateTag] = csrf.TemplateField(r)
 	return td
 }
 

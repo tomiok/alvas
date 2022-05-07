@@ -5,18 +5,19 @@
     <div class="container">
         <form method="POST" id="newCustomer" class="row g-3">
             {{ .Data.csrfField }}
+            {{$formData := .Data }}
             <div class="col-md-6">
                 <label for="validationDefault01" class="form-label">Nombre</label>
                 <input type="text" class="form-control" name="name" id="validationDefault01" required>
             </div>
 
             <div class="col-md-6">
-                <label for="validationDefault02" class="form-label">Direccion</label>
-                <input type="text" class="form-control" name="address" id="validationDefault02" required>
+                <label for="address" class="form-label">Direccion</label>
+                <input type="text" class="form-control" name="address" id="address" value="{{$formData.address}}" required>
             </div>
             <div class="col-12">
-                <label for="validationDefault03" class="form-label">Email</label>
-                <input type="text" class="form-control" name="email" id="validationDefault03" required>
+                <label for="email" class="form-label">Email</label>
+                <input type="text" class="form-control" name="email" id="email" required>
             </div>
             <div class="col-12">
                 <label for="validationDefault05" class="form-label">Contraseña</label>
