@@ -1,4 +1,4 @@
-package useradmin
+package user
 
 import "gorm.io/gorm"
 
@@ -13,21 +13,10 @@ func (Admin) TableName() string {
 	return "admin_users"
 }
 
-type createAdminDto struct {
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
-}
-
 type adminDto struct {
 	ID    uint   `json:"id"`
 	Email string `json:"email"`
 	Name  string `json:"name"`
-}
-
-type LoginDto struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
 }
 
 func (a Admin) toDto() *adminDto {

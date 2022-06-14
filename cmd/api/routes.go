@@ -6,7 +6,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gorilla/csrf"
 	"github.com/tomiok/alvas/internal/customers"
-	"github.com/tomiok/alvas/internal/useradmin"
+	"github.com/tomiok/alvas/internal/user"
+	"github.com/tomiok/alvas/internal/user/handler"
 	"github.com/tomiok/alvas/pkg/render"
 	sessmid "github.com/tomiok/alvas/pkg/users"
 	"github.com/tomiok/alvas/pkg/webutils"
@@ -55,8 +56,8 @@ func customerRoutes(r chi.Router, h *Handler) {
 }
 
 func adminRoutes(db *gorm.DB, r chi.Router, sess *scs.SessionManager) {
-	web := useradmin.New(db, sess)
-	r.Mount("/admins", useradmin.Routes(web))
+	web := handler.New(db, sess)
+	r.Mount("/admins", user.Routes(web))
 }
 
 func pingRoute(r chi.Router) {

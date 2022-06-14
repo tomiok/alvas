@@ -1,4 +1,4 @@
-package useradmin
+package user
 
 import (
 	"github.com/tomiok/alvas/pkg/users"
@@ -6,23 +6,23 @@ import (
 )
 
 type Repository interface {
-	CreateAdmin(dto createAdminDto) (*Admin, error)
+	CreateAdmin(email, name, pass string) (*Admin, error)
 	Lookup(email string) (*Admin, error)
 }
 
-type repo struct {
+type repository struct {
 	db *gorm.DB
 }
 
-func newRepo(db *gorm.DB) *repo {
-	return &repo{
+func NewRepository(db *gorm.DB) *repository {
+	return &repository{
 		db: db,
 	}
 }
 
-func (r repo) CreateAdmin(dto createAdminDto) (*Admin, error) {
-	password, _ := users.HashPassword(dto.Password)
-	admin := createAdmin(dto.Email, dto.Name, password)
+func (r repository) CreateAdmin(email, name, pass string) (*Admin, error) {
+	password, _ := users.HashPassword(pass)
+	admin := createAdmin(email, name, password)
 	err := r.db.Create(admin).Error
 
 	if err != nil {
@@ -32,7 +32,7 @@ func (r repo) CreateAdmin(dto createAdminDto) (*Admin, error) {
 	return admin, nil
 }
 
-func (r repo) Lookup(email string) (*Admin, error) {
+func (r repository) Lookup(email string) (*Admin, error) {
 	var admin Admin
 	err := r.db.First(&admin, "email=?", email).Error
 

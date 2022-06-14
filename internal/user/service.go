@@ -1,4 +1,4 @@
-package useradmin
+package user
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 var ErrBadLogin = errors.New("cannot log in, please check your credentials")
 
 type Service interface {
-	Create(dto createAdminDto) (*adminDto, error)
+	Create(email, name, pass string) (*adminDto, error)
 	LogIn(email, password string) (*adminDto, error)
 }
 
@@ -17,14 +17,14 @@ type service struct {
 	repo Repository
 }
 
-func newService(r Repository) *service {
+func NewService(r Repository) *service {
 	return &service{
 		repo: r,
 	}
 }
 
-func (s service) Create(dto createAdminDto) (*adminDto, error) {
-	admin, err := s.repo.CreateAdmin(dto)
+func (s service) Create(email, name, pass string) (*adminDto, error) {
+	admin, err := s.repo.CreateAdmin(email, name, pass)
 
 	if err != nil {
 		return nil, err

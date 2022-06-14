@@ -2,7 +2,7 @@ package migrations
 
 import (
 	"github.com/tomiok/alvas/internal/customers"
-	"github.com/tomiok/alvas/internal/useradmin"
+	"github.com/tomiok/alvas/internal/user"
 	"gorm.io/gorm"
 )
 
@@ -13,7 +13,7 @@ func Migrate(db *gorm.DB) error {
 		return err1
 	}
 
-	err2 := useradmin.Migrate(db)
+	err2 := user.Migrate(db)
 
 	if err2 != nil {
 		return err2
