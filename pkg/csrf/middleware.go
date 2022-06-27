@@ -1,8 +1,9 @@
 package csrfmid
 
 import (
-	"github.com/gorilla/csrf"
 	"net/http"
+
+	"github.com/gorilla/csrf"
 )
 
 func NoSurf() func(_ http.Handler) http.Handler {

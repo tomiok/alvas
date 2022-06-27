@@ -1,22 +1,18 @@
 package migrations
 
 import (
-	"github.com/tomiok/alvas/internal/customers"
+	"github.com/tomiok/alvas/internal/customer"
 	"github.com/tomiok/alvas/internal/user"
 	"gorm.io/gorm"
 )
 
 func Migrate(db *gorm.DB) error {
-	err1 := customers.Migrate(db)
-
-	if err1 != nil {
-		return err1
+	if err := customer.Migrate(db); err != nil {
+		return err
 	}
 
-	err2 := user.Migrate(db)
-
-	if err2 != nil {
-		return err2
+	if err := user.Migrate(db); err != nil {
+		return err
 	}
 
 	return nil

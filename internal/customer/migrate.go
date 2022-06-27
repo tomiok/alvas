@@ -1,4 +1,4 @@
-package customers
+package customer
 
 import "gorm.io/gorm"
 

@@ -2,11 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+
+	"github.com/tomiok/alvas/internal/user/repository"
+
 	"github.com/alexedwards/scs/v2"
 	"github.com/tomiok/alvas/internal/user"
 	"github.com/tomiok/alvas/pkg/webutils"
 	"gorm.io/gorm"
-	"net/http"
 )
 
 type Handler struct {
@@ -15,7 +18,7 @@ type Handler struct {
 }
 
 func New(db *gorm.DB, sess *scs.SessionManager) *Handler {
-	repo := user.NewRepository(db)
+	repo := repository.NewRepository(db)
 	svc := user.NewService(repo)
 	return &Handler{
 		s:    svc,
@@ -44,7 +47,7 @@ func (h Handler) CreateAdminHandler() func(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
-		res, err := h.s.Create(req)
+		res, err := h.s.Create(req.Email, req.Name, req.Password)
 
 		if err != nil {
 			webutils.ResponseBadRequest(w, "cannot create admin user", err)

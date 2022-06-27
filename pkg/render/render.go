@@ -2,12 +2,13 @@ package render
 
 import (
 	"bytes"
-	"github.com/gorilla/csrf"
-	"github.com/rs/zerolog/log"
-	"github.com/tomiok/alvas/pkg/config"
 	"html/template"
 	"net/http"
 	"path/filepath"
+
+	"github.com/gorilla/csrf"
+	"github.com/rs/zerolog/log"
+	"github.com/tomiok/alvas/pkg/config"
 )
 
 var functions = template.FuncMap{}

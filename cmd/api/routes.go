@@ -1,34 +1,25 @@
 package main
 
 import (
-	"github.com/alexedwards/scs/v2"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/gorilla/csrf"
-	"github.com/tomiok/alvas/internal/customers"
-	"github.com/tomiok/alvas/internal/user"
-	"github.com/tomiok/alvas/internal/user/handler"
-	"github.com/tomiok/alvas/pkg/render"
-	sessmid "github.com/tomiok/alvas/pkg/users"
-	"github.com/tomiok/alvas/pkg/webutils"
-	"gorm.io/gorm"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
-)
 
-type Handler struct {
-	customerHandler *customers.Web
-}
+	"github.com/alexedwards/scs/v2"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/gorilla/csrf"
+	customerHandler "github.com/tomiok/alvas/internal/customer/handler"
+	userHandler "github.com/tomiok/alvas/internal/user/handler"
+	"github.com/tomiok/alvas/pkg/render"
+	sessmid "github.com/tomiok/alvas/pkg/users"
+	"github.com/tomiok/alvas/pkg/webutils"
+	"gorm.io/gorm"
+)
 
 func routesSetup(db *gorm.DB, sess *scs.SessionManager) chi.Router {
 	r := chi.NewRouter()
-
-	//main handler
-	handler := &Handler{
-		customerHandler: customers.New(db, sess),
-	}
 
 	// middlewares
 	r.Use(middleware.Recoverer)
@@ -40,33 +31,15 @@ func routesSetup(db *gorm.DB, sess *scs.SessionManager) chi.Router {
 	fileServer(r)
 
 	// login
-	loginRoute(r)
-
-	// application routes
-	customerRoutes(r, handler)
-	adminRoutes(db, r, sess)
-	pingRoute(r)
-	homeRoute(r, sess)
-
-	return r
-}
-
-func customerRoutes(r chi.Router, h *Handler) {
-	r.Mount("/customers", customers.CustomerRoutes(h.customerHandler))
-}
-
-func adminRoutes(db *gorm.DB, r chi.Router, sess *scs.SessionManager) {
-	web := handler.New(db, sess)
-	r.Mount("/admins", user.Routes(web))
-}
-
-func pingRoute(r chi.Router) {
-	r.Get("/ping", func(w http.ResponseWriter, req *http.Request) {
-		_, _ = w.Write([]byte("pong"))
+	r.Get("/login", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			render.TemplateRender(w, r, "login.page.tmpl", &render.TemplateData{
+				IsLoginReq: true,
+			})
+		}
 	})
-}
 
-func homeRoute(r chi.Router, sess *scs.SessionManager) {
+	// home
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		var td = &render.TemplateData{}
 		if sess.Exists(r.Context(), webutils.SessCustomerID) {
@@ -76,15 +49,28 @@ func homeRoute(r chi.Router, sess *scs.SessionManager) {
 
 		render.TemplateRender(w, r, "home.page.tmpl", td)
 	})
+
+	// application routes
+	_customerHandler := customerHandler.NewHandler(db, sess)
+	r.Route("/customer", func(r chi.Router) {
+		r.Post("/", _customerHandler.CreateHandler())
+		r.Get("/", _customerHandler.CreateHandlerView)
+
+	})
+
+	_userHandler := userHandler.New(db, sess)
+	r.Route("/admins", func(r chi.Router) {
+		r.Post("/", _userHandler.CreateAdminHandler())
+	})
+
+	pingRoute(r)
+
+	return r
 }
 
-func loginRoute(r chi.Router) {
-	r.Get("/login", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			render.TemplateRender(w, r, "login.page.tmpl", &render.TemplateData{
-				IsLoginReq: true,
-			})
-		}
+func pingRoute(r chi.Router) {
+	r.Get("/ping", func(w http.ResponseWriter, req *http.Request) {
+		_, _ = w.Write([]byte("pong"))
 	})
 }
 
@@ -102,7 +88,7 @@ func fs(r chi.Router, path string, root http.FileSystem) {
 	}
 
 	if path != "/" && path[len(path)-1] != '/' {
-		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
+		r.Get(path, http.RedirectHandler(path+"/", http.StatusMovedPermanently).ServeHTTP)
 		path += "/"
 	}
 	path += "*"

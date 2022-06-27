@@ -1,6 +1,9 @@
 package main
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/alexedwards/scs/v2"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -9,8 +12,6 @@ import (
 	"github.com/tomiok/alvas/pkg/config"
 	"github.com/tomiok/alvas/pkg/render"
 	"gorm.io/gorm"
-	"net/http"
-	"time"
 )
 
 func main() {

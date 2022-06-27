@@ -1,6 +1,14 @@
 package user
 
-import "gorm.io/gorm"
+import (
+	"errors"
+
+	"github.com/rs/zerolog/log"
+	"github.com/tomiok/alvas/pkg/users"
+	"gorm.io/gorm"
+)
+
+var ErrBadLogin = errors.New("cannot log in, please check your credentials")
 
 type Admin struct {
 	gorm.Model
@@ -27,10 +35,59 @@ func (a Admin) toDto() *adminDto {
 	}
 }
 
-func createAdmin(email, name, pass string) *Admin {
+func CreateAdmin(email, name, pass string) *Admin {
 	return &Admin{
 		email:    email,
 		name:     name,
 		password: pass,
 	}
+}
+
+type Service interface {
+	Create(email, name, pass string) (*adminDto, error)
+	LogIn(email, password string) (*adminDto, error)
+}
+
+type Repository interface {
+	CreateAdmin(email, name, pass string) (*Admin, error)
+	Lookup(email string) (*Admin, error)
+}
+
+type service struct {
+	repo Repository
+}
+
+func NewService(r Repository) *service {
+	return &service{
+		repo: r,
+	}
+}
+
+func (s service) Create(email, name, pass string) (*adminDto, error) {
+	admin, err := s.repo.CreateAdmin(email, name, pass)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res := admin.toDto()
+
+	return res, nil
+}
+
+func (s service) LogIn(email, password string) (*adminDto, error) {
+	admin, err := s.repo.Lookup(email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !users.DoPasswordsMatch(admin.password, password) {
+		return nil, ErrBadLogin
+	}
+
+	res := admin.toDto()
+
+	log.Info().Msg("admin logged OK")
+	return res, nil
 }
