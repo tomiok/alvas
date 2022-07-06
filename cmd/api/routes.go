@@ -1,31 +1,29 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gorilla/csrf"
-	customerHandler "github.com/tomiok/alvas/internal/customer/handler"
-	userHandler "github.com/tomiok/alvas/internal/user/handler"
 	"github.com/tomiok/alvas/pkg/render"
-	sessmid "github.com/tomiok/alvas/pkg/users"
+	"github.com/tomiok/alvas/pkg/users"
 	"github.com/tomiok/alvas/pkg/webutils"
-	"gorm.io/gorm"
 )
 
-func routesSetup(db *gorm.DB, sess *scs.SessionManager) chi.Router {
+func routesSetup(deps *dependencies) chi.Router {
+	sess := deps.session
 	r := chi.NewRouter()
 
 	// middlewares
 	r.Use(middleware.Recoverer)
 	csrfMiddleware := csrf.Protect([]byte("32-byte-long-auth-key"))
 	r.Use(csrfMiddleware)
-	r.Use(sessmid.LoadSession(sess))
+	r.Use(users.LoadSession(sess))
 
 	// file server
 	fileServer(r)
@@ -36,6 +34,10 @@ func routesSetup(db *gorm.DB, sess *scs.SessionManager) chi.Router {
 			render.TemplateRender(w, r, "login.page.tmpl", &render.TemplateData{
 				IsLoginReq: true,
 			})
+		}
+
+		if r.Method == http.MethodPost {
+			log.Println("POST")
 		}
 	})
 
@@ -50,28 +52,26 @@ func routesSetup(db *gorm.DB, sess *scs.SessionManager) chi.Router {
 		render.TemplateRender(w, r, "home.page.tmpl", td)
 	})
 
-	// application routes
-	_customerHandler := customerHandler.NewHandler(db, sess)
-	r.Route("/customer", func(r chi.Router) {
+	// customer
+	_customerHandler := deps.customerHandler
+	r.Route("/customers", func(r chi.Router) {
 		r.Post("/", _customerHandler.CreateHandler())
 		r.Get("/", _customerHandler.CreateHandlerView)
 
 	})
 
-	_userHandler := userHandler.New(db, sess)
+	// user
+	_userHandler := deps.userHandler
 	r.Route("/admins", func(r chi.Router) {
 		r.Post("/", _userHandler.CreateAdminHandler())
 	})
 
-	pingRoute(r)
-
-	return r
-}
-
-func pingRoute(r chi.Router) {
+	// pingRoute
 	r.Get("/ping", func(w http.ResponseWriter, req *http.Request) {
 		_, _ = w.Write([]byte("pong"))
 	})
+
+	return r
 }
 
 func fileServer(r chi.Router) {

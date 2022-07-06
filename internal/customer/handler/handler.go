@@ -4,13 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/tomiok/alvas/internal/customer/repository"
-
+	"github.com/alexedwards/scs/v2"
 	"github.com/gorilla/csrf"
 	"github.com/tomiok/alvas/internal/customer"
-	"gorm.io/gorm"
-
-	"github.com/alexedwards/scs/v2"
 	"github.com/tomiok/alvas/pkg/render"
 	"github.com/tomiok/alvas/pkg/webutils"
 )
@@ -20,9 +16,7 @@ type Handler struct {
 	*scs.SessionManager
 }
 
-func NewHandler(db *gorm.DB, session *scs.SessionManager) *Handler {
-	repo := repository.NewRepository(db)
-	service := customer.NewService(repo)
+func New(service customer.Service, session *scs.SessionManager) *Handler {
 	return &Handler{
 		Service:        service,
 		SessionManager: session,
@@ -30,7 +24,11 @@ func NewHandler(db *gorm.DB, session *scs.SessionManager) *Handler {
 }
 
 func (h Handler) CreateHandlerView(w http.ResponseWriter, r *http.Request) {
-	render.TemplateRender(w, r, "new.customer.page.tmpl", &render.TemplateData{})
+	render.TemplateRender(w, r, "new.customer.page.tmpl", &render.TemplateData{
+		Data: map[string]interface{}{
+			csrf.TemplateTag: csrf.TemplateField(r),
+		},
+	})
 }
 
 func (h Handler) CreateHandler() func(w http.ResponseWriter, r *http.Request) {
@@ -69,32 +67,40 @@ func (h Handler) CreateHandler() func(w http.ResponseWriter, r *http.Request) {
 			webutils.ResponseBadRequest(w, "cannot create customer", err)
 			return
 		}
+
 		h.Put(r.Context(), webutils.SessCustomerID, _customer.ID)
 		h.Put(r.Context(), webutils.SessCustomerName, _customer.Name)
 		h.Put(r.Context(), webutils.SessIsLogged, true)
+		h.Put(r.Context(), "customer", customer.SessCustomer{
+			Name:    _customer.Name,
+			Address: _customer.Address,
+			Email:   _customer.Email,
+		})
+
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
 
-type logInReq struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-func (h Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var dto logInReq
-
-	body := r.Body
-	defer func() {
-		_ = body.Close()
-
-	}()
-
-	err := h.LogIn(dto.Email, dto.Password)
-	if err != nil {
-		webutils.ResponseBadRequest(w, "cannot log in", err)
-		return
+func (h Handler) LoginHandler() func(w http.ResponseWriter, r *http.Request) {
+	type logInReq struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		var dto logInReq
 
-	webutils.Response2xx(w, http.StatusOK, "logged ok", nil)
+		body := r.Body
+		defer func() {
+			_ = body.Close()
+
+		}()
+
+		err := h.LogIn(dto.Email, dto.Password)
+		if err != nil {
+			webutils.ResponseBadRequest(w, "cannot log in", err)
+			return
+		}
+
+		webutils.Response2xx(w, http.StatusOK, "logged ok", nil)
+	}
 }

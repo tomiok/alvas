@@ -49,6 +49,7 @@
             let object = {};
             formData.forEach((value, key) => object[key] = value);
             let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value
+            debugger
             fetch(url, {
                 method: 'POST',
                 cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached

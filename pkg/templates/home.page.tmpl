@@ -12,6 +12,28 @@
                 {{if $IsLogged }}
                 <h1 class="text-center mt-3"> Bienvenido {{.CustomerName}}</h1>
             </div>
+
+            <div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">First</th>
+                        <th scope="col">Last</th>
+                        <th scope="col">Handle</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
             <div class="row justify-content-center mb-2">
                 <div class="col-2 text-center">
                     <button type="button" class="btn btn-primary">Nuevo envio</button>
@@ -21,6 +43,7 @@
                     <button type="button" class="btn btn-primary">Ver envios</button>
                 </div>
             </div>
+
             {{else}}
                 <h1 class="text-center mt-3"> Bienvenidos a <strong>Alvas</strong> envíos</h1>
             {{end}}

@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/gorilla/csrf"
 	"github.com/rs/zerolog/log"
 	"github.com/tomiok/alvas/pkg/config"
 )
@@ -21,17 +20,6 @@ type TemplateData struct {
 	Data         map[string]interface{}
 	IsLoginReq   bool
 	IsLogged     bool
-}
-
-func addDefaultData(td *TemplateData, r *http.Request) *TemplateData {
-	if td.Data == nil {
-		td.Data = map[string]interface{}{
-			csrf.TemplateTag: csrf.TemplateField(r),
-		}
-		return td
-	}
-	td.Data[csrf.TemplateTag] = csrf.TemplateField(r)
-	return td
 }
 
 func TemplateRender(w http.ResponseWriter, r *http.Request, tmpl string, td *TemplateData) {
@@ -51,8 +39,6 @@ func TemplateRender(w http.ResponseWriter, r *http.Request, tmpl string, td *Tem
 
 		t = cache[tmpl]
 	}
-
-	td = addDefaultData(td, r)
 
 	buf := new(bytes.Buffer)
 	err := t.Execute(buf, td)

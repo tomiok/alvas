@@ -4,12 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/tomiok/alvas/internal/user/repository"
-
 	"github.com/alexedwards/scs/v2"
 	"github.com/tomiok/alvas/internal/user"
 	"github.com/tomiok/alvas/pkg/webutils"
-	"gorm.io/gorm"
 )
 
 type Handler struct {
@@ -17,11 +14,9 @@ type Handler struct {
 	sess *scs.SessionManager
 }
 
-func New(db *gorm.DB, sess *scs.SessionManager) *Handler {
-	repo := repository.NewRepository(db)
-	svc := user.NewService(repo)
+func New(service user.Service, sess *scs.SessionManager) *Handler {
 	return &Handler{
-		s:    svc,
+		s:    service,
 		sess: sess,
 	}
 }

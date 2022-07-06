@@ -19,6 +19,12 @@ type Customer struct {
 	Password string
 }
 
+type SessCustomer struct {
+	Name    string
+	Address string
+	Email   string
+}
+
 type CreateCustomer struct {
 	Name     string
 	Address  string
