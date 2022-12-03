@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gorilla/csrf"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -22,5 +23,6 @@ func newServer(port string, r chi.Router) *Server {
 
 func (s *Server) start() {
 	log.Info().Msgf("server staring in port %s", s.Addr)
-	log.Fatal().Err(s.ListenAndServe())
+
+	http.ListenAndServe(s.Addr, csrf.Protect([]byte("32-byte-long-auth-key"))(s.Handler))
 }

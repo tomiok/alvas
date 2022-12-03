@@ -10,6 +10,7 @@ import (
 	customerHandler "github.com/tomiok/alvas/internal/customer/handler"
 	customerRepository "github.com/tomiok/alvas/internal/customer/repository"
 	"github.com/tomiok/alvas/internal/database"
+	deliveryHandler "github.com/tomiok/alvas/internal/delivery/handler"
 	"github.com/tomiok/alvas/internal/user"
 	userHandler "github.com/tomiok/alvas/internal/user/handler"
 	userRepository "github.com/tomiok/alvas/internal/user/repository"
@@ -21,6 +22,7 @@ type dependencies struct {
 
 	userHandler     *userHandler.Handler
 	customerHandler *customerHandler.Handler
+	deliveryHandler *deliveryHandler.Handler
 
 	session *scs.SessionManager
 }
@@ -47,9 +49,11 @@ func NewDependencies() *dependencies {
 	_userHandler := userHandler.New(userService, session)
 	_customerHandler := customerHandler.New(customerService, session)
 
+	_deliveryHandler := deliveryHandler.New()
 	return &dependencies{
 		userHandler:     _userHandler,
 		customerHandler: _customerHandler,
+		deliveryHandler: _deliveryHandler,
 		session:         session,
 	}
 }

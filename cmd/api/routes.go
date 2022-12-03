@@ -1,7 +1,6 @@
 package main
 
 import (
-	csrfmid "github.com/tomiok/alvas/pkg/csrf"
 	"log"
 	"net/http"
 	"os"
@@ -21,7 +20,6 @@ func routesSetup(deps *dependencies) chi.Router {
 
 	// middlewares
 	r.Use(middleware.Recoverer)
-	r.Use(csrfmid.NoSurf())
 	r.Use(users.LoadSession(sess))
 
 	// file server
@@ -67,6 +65,9 @@ func routesSetup(deps *dependencies) chi.Router {
 	r.Route("/admins", func(r chi.Router) {
 		r.Post("/", _userHandler.CreateAdminHandler())
 	})
+
+	// delivery
+	r.Get("/send-package", deps.deliveryHandler.SendPackageView())
 
 	// ping route
 	r.Get("/ping", func(w http.ResponseWriter, req *http.Request) {

@@ -1,0 +1,63 @@
+{{ template "base" .}}
+{{define "content"}}
+    <title>Elija el próximo envío</title>
+    <div class="container">
+        <h1 class="text-center">Detalles de envio</h1>
+        <form method="POST" id="generate" class="row">
+            <div class="mb-3">
+                <label for="sender" class="form-label">Remitente</label>
+                <input id="sender" class="form-control" type="text" value="tomasito"
+                       aria-label="readonly input example"
+                       readonly>
+            </div>
+            <div class="mb-3">
+                <label for="addrFrom" class="form-label">Origen</label>
+                <input id="addrFrom" class="form-control" type="text">
+            </div>
+            <div class="mb-3">
+                <label for="addrTo" class="form-label">Destino</label>
+                <input id="addrTo" class="form-control" type="text">
+            </div>
+            <div class="mb-3">
+                <label for="weight" class="form-label">Peso aprox (KG)</label>
+                <input id="weight" type="text" class="form-control">
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-primary" type="submit">Generar</button>
+            </div>
+        </form>
+    </div>
+{{end}}
+{{define "js"}}
+
+    <script type="application/javascript">
+        document.getElementById('generate').addEventListener("submit", function (e) {
+            submitForm(e, this, "/generate-delivery")
+        })
+
+        function submitForm(e, form, url) {
+            e.preventDefault()
+            let formData = new FormData(form);
+            let object = {};
+            formData.forEach((value, key) => object[key] = value);
+            let csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value
+            fetch(url, {
+                method: 'POST',
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'same-origin', // include, *same-origin, omit
+                redirect: 'follow',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify(object)
+            }).then(function (res) {
+                if (res.redirected) {
+                    window.location.href = res.url
+                }
+            }).catch(error => {
+                alert("cannot save")
+            })
+        }
+    </script>
+{{end}}
