@@ -68,7 +68,7 @@ func routesSetup(deps *dependencies) chi.Router {
 		r.Post("/", _userHandler.CreateAdminHandler())
 	})
 
-	// pingRoute
+	// ping route
 	r.Get("/ping", func(w http.ResponseWriter, req *http.Request) {
 		_, _ = w.Write([]byte("pong"))
 	})
