@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/tomiok/alvas/internal/customer"
 	"github.com/tomiok/alvas/pkg/render"
-	"github.com/tomiok/alvas/pkg/webutils"
+	"github.com/tomiok/alvas/pkg/web"
 )
 
 type Handler struct {
@@ -24,7 +24,7 @@ func New(service customer.Service, session *scs.SessionManager) *Handler {
 }
 
 func (h Handler) CreateHandlerView(w http.ResponseWriter, r *http.Request) {
-	render.TemplateRender(w, r, "new.customer.page.tmpl", &render.TemplateData{
+	render.TemplateRender(w, "new.customer.page.tmpl", &render.TemplateData{
 		Data: map[string]interface{}{
 			csrf.TemplateTag: csrf.TemplateField(r),
 		},
@@ -52,7 +52,7 @@ func (h Handler) CreateHandler() func(w http.ResponseWriter, r *http.Request) {
 		err := json.NewDecoder(body).Decode(&dto)
 
 		if err != nil {
-			webutils.ResponseBadRequest(w, "cannot decode create customer request", err)
+			web.ResponseBadRequest(w, "cannot decode create customer request", err)
 			return
 		}
 
@@ -64,18 +64,16 @@ func (h Handler) CreateHandler() func(w http.ResponseWriter, r *http.Request) {
 		})
 
 		if err != nil {
-			webutils.ResponseBadRequest(w, "cannot create customer", err)
+			web.ResponseBadRequest(w, "cannot create customer", err)
 			return
 		}
 
-		h.Put(r.Context(), webutils.SessCustomerID, _customer.ID)
-		h.Put(r.Context(), webutils.SessCustomerName, _customer.Name)
-		h.Put(r.Context(), webutils.SessIsLogged, true)
-		h.Put(r.Context(), "customer", customer.SessCustomer{
-			Name:    _customer.Name,
-			Address: _customer.Address,
-			Email:   _customer.Email,
-		})
+		h.Put(r.Context(), web.SessCustomerID, _customer.ID)
+		h.Put(r.Context(), web.SessCustomerName, _customer.Name)
+		h.Put(r.Context(), web.SessIsLogged, true)
+		h.Put(r.Context(), "customerID", _customer.ID)
+		h.Put(r.Context(), "customerName", _customer.Name)
+		h.Put(r.Context(), "customerAddress", _customer.Address)
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
@@ -97,10 +95,10 @@ func (h Handler) LoginHandler() func(w http.ResponseWriter, r *http.Request) {
 
 		err := h.LogIn(dto.Email, dto.Password)
 		if err != nil {
-			webutils.ResponseBadRequest(w, "cannot log in", err)
+			web.ResponseBadRequest(w, "cannot log in", err)
 			return
 		}
 
-		webutils.Response2xx(w, http.StatusOK, "logged ok", nil)
+		web.Response2xx(w, http.StatusOK, "logged ok", nil)
 	}
 }

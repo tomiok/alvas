@@ -1,6 +1,7 @@
 package main
 
 import (
+	csrfmid "github.com/tomiok/alvas/pkg/csrf"
 	"log"
 	"net/http"
 	"os"
@@ -9,10 +10,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/gorilla/csrf"
 	"github.com/tomiok/alvas/pkg/render"
 	"github.com/tomiok/alvas/pkg/users"
-	"github.com/tomiok/alvas/pkg/webutils"
+	"github.com/tomiok/alvas/pkg/web"
 )
 
 func routesSetup(deps *dependencies) chi.Router {
@@ -21,8 +21,7 @@ func routesSetup(deps *dependencies) chi.Router {
 
 	// middlewares
 	r.Use(middleware.Recoverer)
-	csrfMiddleware := csrf.Protect([]byte("32-byte-long-auth-key"))
-	r.Use(csrfMiddleware)
+	r.Use(csrfmid.NoSurf())
 	r.Use(users.LoadSession(sess))
 
 	// file server
@@ -31,7 +30,7 @@ func routesSetup(deps *dependencies) chi.Router {
 	// login
 	r.Get("/login", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
-			render.TemplateRender(w, r, "login.page.tmpl", &render.TemplateData{
+			render.TemplateRender(w, "login.page.tmpl", &render.TemplateData{
 				IsLoginReq: true,
 			})
 		}
@@ -43,13 +42,16 @@ func routesSetup(deps *dependencies) chi.Router {
 
 	// home
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		var td = &render.TemplateData{}
-		if sess.Exists(r.Context(), webutils.SessCustomerID) {
-			td.CustomerName = sess.GetString(r.Context(), webutils.SessCustomerName)
+		td := render.NewTemplateData()
+		if sess.Exists(r.Context(), web.SessCustomerID) {
+			td.CustomerName = sess.GetString(r.Context(), web.SessCustomerName)
 			td.IsLogged = true
+			td.Data["customerID"] = sess.Get(r.Context(), "customerID")
+			td.Data["customerName"] = sess.Get(r.Context(), "customerName")
+			td.Data["customerAddress"] = sess.Get(r.Context(), "customerAddress")
 		}
 
-		render.TemplateRender(w, r, "home.page.tmpl", td)
+		render.TemplateRender(w, "home.page.tmpl", td)
 	})
 
 	// customer

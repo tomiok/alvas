@@ -16,14 +16,20 @@ type TemplateData struct {
 	CustomerName string
 	AdminName    string
 	Err          string
-	CSRFToken    string
 	Data         map[string]interface{}
 	IsLoginReq   bool
 	IsLogged     bool
 }
 
-func TemplateRender(w http.ResponseWriter, r *http.Request, tmpl string, td *TemplateData) {
+func NewTemplateData() *TemplateData {
+	return &TemplateData{
+		Data: make(map[string]interface{}),
+	}
+}
+
+func TemplateRender(w http.ResponseWriter, tmpl string, td *TemplateData) {
 	var t *template.Template
+
 	if config.AppCfg.UseCache {
 		var ok = true
 		t, ok = config.AppCfg.Cache[tmpl]

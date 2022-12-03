@@ -18,17 +18,15 @@
                     <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">First</th>
-                        <th scope="col">Last</th>
-                        <th scope="col">Handle</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Direccion</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
+                        <th scope="row">{{index .Data "customerID"}}</th>
+                        <td>{{index .Data "customerName"}}</td>
+                        <td>{{index .Data "customerAddress"}}</td>
                     </tr>
                     </tbody>
                 </table>
