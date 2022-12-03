@@ -20,6 +20,7 @@ type Customer struct {
 }
 
 type SessCustomer struct {
+	ID      uint
 	Name    string
 	Address string
 	Email   string

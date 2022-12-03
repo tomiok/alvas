@@ -49,7 +49,7 @@ func NewDependencies() *dependencies {
 	_userHandler := userHandler.New(userService, session)
 	_customerHandler := customerHandler.New(customerService, session)
 
-	_deliveryHandler := deliveryHandler.New()
+	_deliveryHandler := deliveryHandler.New(session)
 	return &dependencies{
 		userHandler:     _userHandler,
 		customerHandler: _customerHandler,

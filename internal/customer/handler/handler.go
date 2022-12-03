@@ -71,9 +71,12 @@ func (h Handler) CreateHandler() func(w http.ResponseWriter, r *http.Request) {
 		h.Put(r.Context(), web.SessCustomerID, _customer.ID)
 		h.Put(r.Context(), web.SessCustomerName, _customer.Name)
 		h.Put(r.Context(), web.SessIsLogged, true)
-		h.Put(r.Context(), "customerID", _customer.ID)
-		h.Put(r.Context(), "customerName", _customer.Name)
-		h.Put(r.Context(), "customerAddress", _customer.Address)
+		h.Put(r.Context(), "customer", customer.SessCustomer{
+			ID:      _customer.ID,
+			Name:    _customer.Name,
+			Address: _customer.Address,
+			Email:   _customer.Email,
+		})
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}

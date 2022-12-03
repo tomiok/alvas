@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/tomiok/alvas/internal/customer"
 	"log"
 	"net/http"
 	"os"
@@ -44,9 +45,11 @@ func routesSetup(deps *dependencies) chi.Router {
 		if sess.Exists(r.Context(), web.SessCustomerID) {
 			td.CustomerName = sess.GetString(r.Context(), web.SessCustomerName)
 			td.IsLogged = true
-			td.Data["customerID"] = sess.Get(r.Context(), "customerID")
-			td.Data["customerName"] = sess.Get(r.Context(), "customerName")
-			td.Data["customerAddress"] = sess.Get(r.Context(), "customerAddress")
+			c := sess.Get(r.Context(), "customer").(customer.SessCustomer)
+
+			td.Data["customerID"] = c.ID
+			td.Data["customerName"] = c.Name
+			td.Data["customerAddress"] = c.Address
 		}
 
 		render.TemplateRender(w, "home.page.tmpl", td)
@@ -57,7 +60,6 @@ func routesSetup(deps *dependencies) chi.Router {
 	r.Route("/customers", func(r chi.Router) {
 		r.Post("/", _customerHandler.CreateHandler())
 		r.Get("/", _customerHandler.CreateHandlerView)
-
 	})
 
 	// user
@@ -67,7 +69,10 @@ func routesSetup(deps *dependencies) chi.Router {
 	})
 
 	// delivery
-	r.Get("/send-package", deps.deliveryHandler.SendPackageView())
+	r.Route("/delivery", func(r chi.Router) {
+		r.Get("/send-package", deps.deliveryHandler.SendPackageView())
+		r.Post("/generate", deps.deliveryHandler.Generate())
+	})
 
 	// ping route
 	r.Get("/ping", func(w http.ResponseWriter, req *http.Request) {

@@ -6,8 +6,9 @@
         <form method="POST" id="generate" class="row">
             <div class="mb-3">
                 <label for="sender" class="form-label">Remitente</label>
-                <input id="sender" class="form-control" type="text" value="tomasito"
+                <input id="sender" class="form-control" type="text" value="{{index .Data "customerID"}}"
                        aria-label="readonly input example"
+                       name="senderID"
                        readonly>
             </div>
             <div class="mb-3">
