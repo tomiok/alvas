@@ -1,4 +1,4 @@
-package render
+package pkg
 
 import (
 	"bytes"
@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/rs/zerolog/log"
-	"github.com/tomiok/alvas/pkg/config"
 )
 
 var functions = template.FuncMap{}
@@ -30,9 +29,9 @@ func NewTemplateData() *TemplateData {
 func TemplateRender(w http.ResponseWriter, tmpl string, td *TemplateData) {
 	var t *template.Template
 
-	if config.AppCfg.UseCache {
+	if AppCfg.UseCache {
 		var ok = true
-		t, ok = config.AppCfg.Cache[tmpl]
+		t, ok = AppCfg.Cache[tmpl]
 		if !ok {
 			log.Fatal().Msg("cache is not working")
 		}

@@ -4,24 +4,32 @@
     <div class="container">
         <h1 class="text-center">Detalles de envio</h1>
         <form method="POST" id="generate" class="row">
+            {{ .Data.csrfField }}
             <div class="mb-3">
-                <label for="sender" class="form-label">Remitente</label>
-                <input id="sender" class="form-control" type="text" value="{{index .Data "customerID"}}"
+                <label for="senderID" class="form-label">Remitente ID</label>
+                <input id="senderID" class="form-control" type="number" step="1" value="{{index .Data "customerID"}}"
                        aria-label="readonly input example"
                        name="senderID"
                        readonly>
             </div>
             <div class="mb-3">
+                <label for="sender" class="form-label">Remitente ID</label>
+                <input id="sender" class="form-control" type="text" value="{{index .Data "customerName"}}"
+                       aria-label="readonly input example"
+                       name="sender"
+                       readonly>
+            </div>
+            <div class="mb-3">
                 <label for="addrFrom" class="form-label">Origen</label>
-                <input id="addrFrom" class="form-control" type="text">
+                <input id="addrFrom" class="form-control" type="text" name="addrFrom">
             </div>
             <div class="mb-3">
                 <label for="addrTo" class="form-label">Destino</label>
-                <input id="addrTo" class="form-control" type="text">
+                <input id="addrTo" class="form-control" type="text" name="addrTo">
             </div>
             <div class="mb-3">
                 <label for="weight" class="form-label">Peso aprox (KG)</label>
-                <input id="weight" type="text" class="form-control">
+                <input id="weight" type="number" class="form-control" name="weight">
             </div>
             <div class="mb-3">
                 <button class="btn btn-primary" type="submit">Generar</button>
@@ -30,10 +38,9 @@
     </div>
 {{end}}
 {{define "js"}}
-
     <script type="application/javascript">
         document.getElementById('generate').addEventListener("submit", function (e) {
-            submitForm(e, this, "/generate-delivery")
+            submitForm(e, this, "/delivery/generate")
         })
 
         function submitForm(e, form, url) {
@@ -53,11 +60,16 @@
                 },
                 body: JSON.stringify(object)
             }).then(function (res) {
+                if(!res.ok) {
+                    console.log(res)
+                    console.log(object)
+                }
+
                 if (res.redirected) {
                     window.location.href = res.url
                 }
             }).catch(error => {
-                alert("cannot save")
+                console.log(error)
             })
         }
     </script>

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"github.com/tomiok/alvas/internal/user"
-	"github.com/tomiok/alvas/pkg/users"
+	"github.com/tomiok/alvas/pkg"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +17,7 @@ func NewRepository(db *gorm.DB) *repository {
 }
 
 func (r repository) CreateAdmin(email, name, pass string) (*user.Admin, error) {
-	password, _ := users.HashPassword(pass)
+	password, _ := pkg.HashPassword(pass)
 	admin := user.CreateAdmin(email, name, password)
 	err := r.db.Create(admin).Error
 

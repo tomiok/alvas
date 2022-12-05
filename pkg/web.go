@@ -1,4 +1,4 @@
-package web
+package pkg
 
 import (
 	"encoding/json"
@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/alexedwards/scs/v2"
 
 	"github.com/rs/zerolog/log"
 )
@@ -30,6 +32,15 @@ type okDto = struct {
 func ResponseBadRequest(w http.ResponseWriter, message string, err error) {
 	log.Error().Msg(err.Error())
 	w.WriteHeader(http.StatusBadRequest)
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(&badRequestDto{
+		Message: message,
+	})
+}
+
+func ResponseInternalError(w http.ResponseWriter, message string, err error) {
+	log.Error().Msg(err.Error())
+	w.WriteHeader(http.StatusInternalServerError)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(&badRequestDto{
 		Message: message,
@@ -91,4 +102,10 @@ func getFuncName(funcBase string) string {
 
 func getBase(path string) string {
 	return filepath.Base(path)
+}
+
+func LoadSession(sess *scs.SessionManager) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return sess.LoadAndSave(next)
+	}
 }

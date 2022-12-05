@@ -3,10 +3,7 @@ package main
 import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/tomiok/alvas/internal/database"
-	"github.com/tomiok/alvas/internal/migrations"
-	"github.com/tomiok/alvas/pkg/config"
-	"github.com/tomiok/alvas/pkg/render"
+	"github.com/tomiok/alvas/pkg"
 	"gorm.io/gorm"
 )
 
@@ -14,7 +11,7 @@ func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
 	//database
-	db := database.New()
+	db := pkg.New()
 
 	//migrations
 	err := migrate(db)
@@ -25,7 +22,7 @@ func main() {
 	}
 
 	// template cache
-	config.Init(render.TemplateRenderCache)
+	pkg.Init(pkg.TemplateRenderCache)
 
 	deps := NewDependencies()
 	r := routesSetup(deps)
@@ -35,5 +32,5 @@ func main() {
 }
 
 func migrate(db *gorm.DB) error {
-	return migrations.Migrate(db)
+	return Migrate(db)
 }

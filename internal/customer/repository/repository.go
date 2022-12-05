@@ -2,7 +2,7 @@ package repository
 
 import (
 	"github.com/tomiok/alvas/internal/customer"
-	"github.com/tomiok/alvas/pkg/users"
+	"github.com/tomiok/alvas/pkg"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +17,7 @@ func NewRepository(db *gorm.DB) *repository {
 }
 
 func (r repository) Create(dto customer.CreateCustomer) (*customer.Customer, error) {
-	pass, _ := users.HashPassword(dto.Password)
+	pass, _ := pkg.HashPassword(dto.Password)
 	c, err := customer.Create(dto.Name, dto.Address, dto.Email, pass)
 
 	if err != nil {

@@ -6,7 +6,6 @@
         <form method="POST" id="newCustomer" class="row g-3">
             {{ .Data.csrfField }}
             {{$formData := .Data }}
-            <input type="hidden" value="{{ .Data.csrfField }}">
             <div class="col-md-6">
                 <label for="name" class="form-label">Nombre</label>
                 <input type="text" class="form-control" name="name" id="name" required>

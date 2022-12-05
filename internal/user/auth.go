@@ -3,11 +3,12 @@ package user
 import (
 	"context"
 	"errors"
+	"net/http"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt"
 	"github.com/rs/zerolog/log"
-	"github.com/tomiok/alvas/pkg/web"
-	"net/http"
+	"github.com/tomiok/alvas/pkg"
 )
 
 type KeyUserID string
@@ -35,7 +36,7 @@ func (j *JWTAuthService) AdminMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("Authorization")
 		if token == "" {
-			log.Warn().Msgf("%s - no token given", web.Trace())
+			log.Warn().Msgf("%s - no token given", pkg.Trace())
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
@@ -43,28 +44,28 @@ func (j *JWTAuthService) AdminMiddleware(next http.Handler) http.Handler {
 		valid, err := j.ValidateJWT(token)
 
 		if err != nil {
-			log.Warn().Msgf("%s - %s", web.Trace(), err.Error())
-			web.ResponseUnauthorized(w, "unauthorized - invalid token")
+			log.Warn().Msgf("%s - %s", pkg.Trace(), err.Error())
+			pkg.ResponseUnauthorized(w, "unauthorized - invalid token")
 			return
 		}
 
 		if !valid {
-			log.Warn().Msgf("%s - token invalid", web.Trace())
-			web.ResponseUnauthorized(w, "unauthorized - invalid token")
+			log.Warn().Msgf("%s - token invalid", pkg.Trace())
+			pkg.ResponseUnauthorized(w, "unauthorized - invalid token")
 			return
 		}
 
 		claims, err := j.DecodeJWT(token)
 
 		if err != nil {
-			log.Warn().Msgf("%s - %s", web.Trace(), err.Error())
-			web.ResponseUnauthorized(w, "unauthorized - cannot decode token")
+			log.Warn().Msgf("%s - %s", pkg.Trace(), err.Error())
+			pkg.ResponseUnauthorized(w, "unauthorized - cannot decode token")
 			return
 		}
 
 		if claims.Role != "admin" {
-			log.Warn().Msgf("%s - %s is not an admin", web.Trace(), claims.Email)
-			web.ResponseUnauthorized(w, "unauthorized - not an admin token")
+			log.Warn().Msgf("%s - %s is not an admin", pkg.Trace(), claims.Email)
+			pkg.ResponseUnauthorized(w, "unauthorized - not an admin token")
 			return
 		}
 
@@ -77,29 +78,29 @@ func (j *JWTAuthService) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("Authorization")
 		if token == "" {
-			log.Warn().Msgf("%s - no token given", web.Trace())
-			web.ResponseUnauthorized(w, "unauthorized - no token given")
+			log.Warn().Msgf("%s - no token given", pkg.Trace())
+			pkg.ResponseUnauthorized(w, "unauthorized - no token given")
 			return
 		}
 
 		valid, err := j.ValidateJWT(token)
 
 		if err != nil {
-			log.Warn().Msgf("%s - %s", web.Trace(), err.Error())
-			web.ResponseUnauthorized(w, "unauthorized - invalid token")
+			log.Warn().Msgf("%s - %s", pkg.Trace(), err.Error())
+			pkg.ResponseUnauthorized(w, "unauthorized - invalid token")
 			return
 		}
 
 		if !valid {
-			log.Warn().Msgf("%s - token invalid", web.Trace())
-			web.ResponseUnauthorized(w, "unauthorized - invalid token")
+			log.Warn().Msgf("%s - token invalid", pkg.Trace())
+			pkg.ResponseUnauthorized(w, "unauthorized - invalid token")
 			return
 		}
 
 		claims, err := j.DecodeJWT(token)
 		if err != nil {
-			log.Warn().Msgf("%s - token invalid", web.Trace())
-			web.ResponseUnauthorized(w, "unauthorized - invalid token")
+			log.Warn().Msgf("%s - token invalid", pkg.Trace())
+			pkg.ResponseUnauthorized(w, "unauthorized - invalid token")
 			return
 		}
 
@@ -107,8 +108,8 @@ func (j *JWTAuthService) AuthMiddleware(next http.Handler) http.Handler {
 
 		if userID != "" {
 			if claims.Id != userID {
-				log.Warn().Msgf("%s - token invalid", web.Trace())
-				web.ResponseUnauthorized(w, "unauthorized - mismatch in user in URL and token")
+				log.Warn().Msgf("%s - token invalid", pkg.Trace())
+				pkg.ResponseUnauthorized(w, "unauthorized - mismatch in user in URL and token")
 				return
 			}
 		}

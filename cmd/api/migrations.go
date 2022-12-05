@@ -1,7 +1,8 @@
-package migrations
+package main
 
 import (
 	"github.com/tomiok/alvas/internal/customer"
+	"github.com/tomiok/alvas/internal/delivery"
 	"github.com/tomiok/alvas/internal/user"
 	"gorm.io/gorm"
 )
@@ -12,6 +13,10 @@ func Migrate(db *gorm.DB) error {
 	}
 
 	if err := user.Migrate(db); err != nil {
+		return err
+	}
+
+	if err := delivery.Migrate(db); err != nil {
 		return err
 	}
 

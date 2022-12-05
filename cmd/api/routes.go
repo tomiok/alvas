@@ -1,18 +1,17 @@
 package main
 
 import (
-	"github.com/tomiok/alvas/internal/customer"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/tomiok/alvas/internal/customer"
+	"github.com/tomiok/alvas/pkg"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/tomiok/alvas/pkg/render"
-	"github.com/tomiok/alvas/pkg/users"
-	"github.com/tomiok/alvas/pkg/web"
 )
 
 func routesSetup(deps *dependencies) chi.Router {
@@ -21,7 +20,7 @@ func routesSetup(deps *dependencies) chi.Router {
 
 	// middlewares
 	r.Use(middleware.Recoverer)
-	r.Use(users.LoadSession(sess))
+	r.Use(pkg.LoadSession(sess))
 
 	// file server
 	fileServer(r)
@@ -29,7 +28,7 @@ func routesSetup(deps *dependencies) chi.Router {
 	// login
 	r.Get("/login", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
-			render.TemplateRender(w, "login.page.tmpl", &render.TemplateData{
+			pkg.TemplateRender(w, "login.page.tmpl", &pkg.TemplateData{
 				IsLoginReq: true,
 			})
 		}
@@ -41,9 +40,9 @@ func routesSetup(deps *dependencies) chi.Router {
 
 	// home
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		td := render.NewTemplateData()
-		if sess.Exists(r.Context(), web.SessCustomerID) {
-			td.CustomerName = sess.GetString(r.Context(), web.SessCustomerName)
+		td := pkg.NewTemplateData()
+		if sess.Exists(r.Context(), pkg.SessCustomerID) {
+			td.CustomerName = sess.GetString(r.Context(), pkg.SessCustomerName)
 			td.IsLogged = true
 			c := sess.Get(r.Context(), "customer").(customer.SessCustomer)
 
@@ -52,7 +51,7 @@ func routesSetup(deps *dependencies) chi.Router {
 			td.Data["customerAddress"] = c.Address
 		}
 
-		render.TemplateRender(w, "home.page.tmpl", td)
+		pkg.TemplateRender(w, "home.page.tmpl", td)
 	})
 
 	// customer
@@ -71,6 +70,7 @@ func routesSetup(deps *dependencies) chi.Router {
 	// delivery
 	r.Route("/delivery", func(r chi.Router) {
 		r.Get("/send-package", deps.deliveryHandler.SendPackageView())
+		r.Get("/", deps.deliveryHandler.GetInformation())
 		r.Post("/generate", deps.deliveryHandler.Generate())
 	})
 

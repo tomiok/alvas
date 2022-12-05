@@ -3,8 +3,9 @@ package user
 import (
 	"errors"
 
+	"github.com/tomiok/alvas/pkg"
+
 	"github.com/rs/zerolog/log"
-	"github.com/tomiok/alvas/pkg/users"
 	"gorm.io/gorm"
 )
 
@@ -82,7 +83,7 @@ func (s service) LogIn(email, password string) (*adminDto, error) {
 		return nil, err
 	}
 
-	if !users.DoPasswordsMatch(admin.password, password) {
+	if !pkg.DoPasswordsMatch(admin.password, password) {
 		return nil, ErrBadLogin
 	}
 
@@ -90,4 +91,10 @@ func (s service) LogIn(email, password string) (*adminDto, error) {
 
 	log.Info().Msg("admin logged OK")
 	return res, nil
+}
+
+func Migrate(db *gorm.DB) error {
+	err := db.AutoMigrate(&Admin{})
+
+	return err
 }

@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/tomiok/alvas/pkg"
+
 	"github.com/alexedwards/scs/v2"
 	"github.com/tomiok/alvas/internal/user"
-	"github.com/tomiok/alvas/pkg/web"
 )
 
 type Handler struct {
@@ -38,18 +39,18 @@ func (h Handler) CreateAdminHandler() func(w http.ResponseWriter, r *http.Reques
 		err := json.NewDecoder(body).Decode(&req)
 
 		if err != nil {
-			web.ResponseBadRequest(w, "cannot decode request for create admin user", err)
+			pkg.ResponseBadRequest(w, "cannot decode request for create admin user", err)
 			return
 		}
 
 		res, err := h.s.Create(req.Email, req.Name, req.Password)
 
 		if err != nil {
-			web.ResponseBadRequest(w, "cannot create admin user", err)
+			pkg.ResponseBadRequest(w, "cannot create admin user", err)
 			return
 		}
 
-		web.Response2xx(w, http.StatusCreated, "admin user created", res)
+		pkg.Response2xx(w, http.StatusCreated, "admin user created", res)
 	}
 }
 
@@ -70,17 +71,17 @@ func (h Handler) LoginHandler() func(w http.ResponseWriter, r *http.Request) {
 		err := json.NewDecoder(body).Decode(&dto)
 
 		if err != nil {
-			web.ResponseBadRequest(w, "cannot decode", err)
+			pkg.ResponseBadRequest(w, "cannot decode", err)
 			return
 		}
 
 		admin, err := h.s.LogIn(dto.Email, dto.Password)
 
 		if err != nil {
-			web.ResponseBadRequest(w, "cannot log in", err)
+			pkg.ResponseBadRequest(w, "cannot log in", err)
 			return
 		}
 
-		web.Response2xx(w, http.StatusOK, "admin logged OK", admin)
+		pkg.Response2xx(w, http.StatusOK, "admin logged OK", admin)
 	}
 }
